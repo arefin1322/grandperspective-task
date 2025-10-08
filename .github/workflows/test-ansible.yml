@@ -24,4 +24,4 @@ jobs:
           pip install ansible ansible-lint docker
 
       - name: Run ansible-lint
-        run: ansible-lint site.yml
+        run: ansible-lint .
