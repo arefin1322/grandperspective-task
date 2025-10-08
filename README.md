@@ -37,12 +37,12 @@ branch.
 
 ## Assumtions :
     1. Assumed passwordless publickey Based Authentication for SSH into to the remote VM from the host machine has been implemented already
-        with the command : "ssh-copy-id -i <VM_USER>@<VM_IP>" (example)
+        with the command : "ssh-copy-id -i <PUBKEY_PATH> <VM_USER>@<VM_IP>" (example)
     2. The invertory ip address input/argument is supported for a single valid ip address only 
     (Note: SSH with multiple ips or domain-specific names are not supported in this case)
     3. Assumed Host machine's public key file exists at the specific location as : "/home/${USER}/.ssh/id_rsa.pub"
     4. Assumed OpenSSH is pre-installed in the remote VM (ubuntu 22.04 LTS) by default
-    5. Assumed remote VM's (ubuntu 22.04 LTS) default user with sudo access (with password) is : "ubuntu"
+    5. Assumed remote VM's (ubuntu 22.04 LTS) default user with sudo access is : "ubuntu" (no password)
     6. Assumed remote VM's (ubuntu 22.04 LTS) PasswordAuthentication is set to "yes" by default in "/etc/ssh/sshd_config"
     7. New dedicated sudo user to create in the remote VM is predefined as : "appuser" (no password)
 
@@ -60,14 +60,13 @@ branch.
    2. Command to try a dry run before running the test challenge (Optional): 
 
 ```
-    ansible-playbook -i '<VM_IP>,' -e "vm_ip=<VM_IP>" -K test_challenge.yml --check
+    ansible-playbook -i '<VM_IP>,' -e "vm_ip=<VM_IP>" test_challenge.yml --check
 ```
-(Note: The above command prompts you for the sudo password of the vm's default remote user "ubuntu")
 
    3. Command to run the test challenge :
 
 ```
-    ansible-playbook -i '<VM_IP>,' -e "vm_ip=<VM_IP>" -K test_challenge.yml
+    ansible-playbook -i '<VM_IP>,' -e "vm_ip=<VM_IP>" test_challenge.yml
 ```
 
    4. Command to run the playbooks individually with tags:
