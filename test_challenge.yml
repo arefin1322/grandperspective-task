@@ -1,0 +1,22 @@
+---
+# Master playbook to orchestrate connect_host → harden_host → deploy_apps
+
+- import_playbook: connect_vm.yml
+  vars:
+    remote_host: "{{ vm_ip }}"
+    default_user: ubuntu
+  tags: connect
+
+- import_playbook: harden_vm.yml
+  vars:
+    remote_host: "{{ vm_ip }}"
+    default_user: ubuntu
+    app_user: appuser
+    pubkey_path: "{{ lookup('file', lookup('env','HOME') + '/.ssh/id_rsa.pub') }}"
+  tags: harden
+
+- import_playbook: deploy_nginx.yml
+  vars:
+    remote_host: "{{ vm_ip }}"
+    default_user: ubuntu
+  tags: deploy

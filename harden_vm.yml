@@ -1,0 +1,85 @@
+- name: Hardening Ubuntu VM
+  hosts: "{{ remote_host }}"
+  remote_user: "{{ default_user }}"
+  gather_facts: yes
+  become: yes
+
+  tasks:
+    # 1. Keep the system updated
+    - name: Update system packages
+      apt:
+        update_cache: yes
+        upgrade: dist
+
+    # 2. Create a dedicated sudo appuser
+    - name: Create a dedicated user "{{ app_user }}" with sudo access
+      user:
+        name: "{{ app_user }}"
+        password: ""
+        shell: /bin/bash
+        create_home: yes
+        groups: sudo
+        append: yes
+        state: present
+
+    - name: Verify user creation
+      command: id "{{ app_user }}"
+      register: user_check
+      changed_when: false
+
+    - name: Allow passwordless sudo for "{{ app_user }}"
+      copy:
+        dest: "/etc/sudoers.d/{{ app_user }}"
+        content: "{{ app_user }} ALL=(ALL) NOPASSWD:ALL\n"
+        owner: root
+        group: root
+        mode: '0440'
+
+    # 3. Appends host's pubkey to authorized_keys of appuser
+    - name: Copy local pubkey to remote host for "{{ app_user }}"
+      ansible.builtin.authorized_key:
+        user: "{{ app_user }}"
+        key: "{{ pubkey_path }}"
+        state: present
+      ignore_errors: yes
+
+    # 4. SSH Hardening
+    - name: Disable root login
+      lineinfile:
+        path: /etc/ssh/sshd_config
+        regexp: '^PermitRootLogin'
+        line: 'PermitRootLogin no'
+
+    - name: Disable password auth
+      lineinfile:
+        path: /etc/ssh/sshd_config
+        regexp: '^PasswordAuthentication'
+        line: 'PasswordAuthentication no'
+
+    - name: Restart SSH
+      service:
+        name: ssh
+        state: restarted
+
+    # 4. Enable Firewall (UFW)
+    - name: Enable UFW
+      ufw:
+        state: enabled
+        policy: deny
+
+    - name: Allow SSH
+      ufw:
+        rule: allow
+        name: OpenSSH
+
+    - name: Allow HTTP
+      ufw:
+        rule: allow
+        port: 80
+        proto: tcp
+
+    # 5. Install monitoring basics
+    - name: Install htop and curl for monitoring help
+      apt:
+        name: [htop, curl]
+        state: present

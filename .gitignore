@@ -1,0 +1,42 @@
+# --- SSH keys or sensitive credentials ---
+*.pem
+*.key
+*.crt
+*.pub
+*.id_rsa*
+*.vault_pass
+
+# --- Local inventory files or host_vars with secrets ---
+inventory/
+*.inventory
+*.ini
+*.cfg
+
+# --- Local fact caches ---
+.fact_cache/
+*.facts
+
+# --- VS Code specific ---
+.vscode/
+.history/
+*.code-workspace
+
+# --- macOS and Windows system junk ---
+.DS_Store
+Thumbs.db
+
+# --- Local ansible-runner or molecule artifacts ---
+*.log
+*.tmp
+.cache/
+.molecule/
+__pycache__/
+*.pyc
+
+# --- Python-related ---
+venv/
+.env/
+.envrc
+
+# --- local env variables ---
+.env
