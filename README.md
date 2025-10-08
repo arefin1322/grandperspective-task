@@ -72,7 +72,7 @@ branch.
    4. Command to run the playbooks individually with tags:
 
 ```
-    ansible-playbook -i '<VM_IP>,' test_challenge.yml --tags "connect,harden,deploy"
+    ansible-playbook -e "vm_ip=<VM_IP>" test_challenge.yml --tags "connect,harden,deploy"
 ```
 
 ## Structure overview of the Ansible project :
