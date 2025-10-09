@@ -63,3 +63,14 @@
         ports:
         - "80:80"
       ignore_errors: yes
+    
+    - name: Verify NGINX webapp connectivity using curl
+      ansible.builtin.shell: |
+        curl -s -o /dev/null -w "%{http_code}" http://localhost:80
+      register: curl_result
+      changed_when: false
+      failed_when: curl_result.stdout != "200"
+
+    - name: Display NGINX connectivity result
+      ansible.builtin.debug:
+        msg: "NGINX is reachable and returned HTTP {{ curl_result.stdout }}"
